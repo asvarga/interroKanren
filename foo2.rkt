@@ -117,24 +117,27 @@
 ;(run 1 (q) (!? (== (sing (sing q ?) ?) '((1)))))
 
 (define (conso head rest out) (== `(,head . ,rest) out))
-;(define (caro l out) (!? (conso ? : l)))
-;(define (cdro l out) (!? (conso : ? l)))
-
-;(run 1 (q) (!? (conso : q '(1 2 3))))
-;(run 1 (q) (!? (conso : q (conso : ? '(1 2 3)))))
+(define (caro l out) (!? (conso out : l)))
+(define (cdro l out) (!? (conso : out l)))
 
 (define (appendo l s ls)
   (conde [(== '() l) (== s ls)]
-         [(!? (conso (conso ? : l) (appendo (conso : ? l) s ?) ls))]))
-         ;[(!? (conso (caro ? l) (appendo (cdro ? l) s ?) ls))]))
+         [(!? (conso (caro l ?) (appendo (cdro l ?) s ?) ls))]))
+
+(run 6 (x y) (appendo x y '(1 2 3 4 5)))
+
+
+         ;[(!? (conso (conso ? : l) (appendo (conso : ? l) s ?) ls))]))
 
 ;(run 1 (q) (appendo '(1 2) '(3 4 5) q))
-(run 5 (x y) (appendo x y '(1 2 3 4 5)))
+;(run 1 (q) (!? (conso : q '(1 2 3))))
+;(run 1 (q) (!? (conso : q (conso : ? '(1 2 3)))))
         
 ;; TODO: cleanup
-;; TODO: get (define (...) (!? )) working
 ;; TODO: get run!? working
 ;; TODO: get (!? (conde ...)) working
+;; TODO: get list creators working
+;; TODO: test !
 
 
 
