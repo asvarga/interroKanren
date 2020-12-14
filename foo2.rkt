@@ -104,11 +104,12 @@
                       (mk-prop (map mk-fresh t))
                       `(fresh ,(unbox freshes) ,@(map mk-fresh (unbox conds)) ,(mk-fresh mapped)))])
         ;(when (not (null? (unbox freshes))) (println ret))
-        (println ret)
+        ;(println ret)
         ret)))
 (define-syntax (!? syn) (datum->syntax syn (mk-fresh (cadr (syntax->datum syn)))))
-(define-syntax-rule (run!? n qs t) (run n  qs (!? t)))
+;(define-syntax-rule (run!? n qs t) (run n  qs (!? t)))
 ;(define-syntax-rule (run*!?  qs t) (run #f qs (!? t)))
+;(define-syntax-rule (define!? t def) (define t (!? def)))
 
 (define (pair x xx) (== xx `(,x . ,x)))
 (define (sing x out) (== out `(,x)))
@@ -116,19 +117,28 @@
 ;(run 1 (q) (!? (== (pair ? q) '(1 . 1))))
 ;(run 1 (q) (!? (== (sing (sing q ?) ?) '((1)))))
 
-;(define (conso head rest out) (== `(,head . ,rest) out))
-;(define (caro l out) (!? (conso out : l)))
-;(define (cdro l out) (!? (conso : out l)))
+(define (conso head rest out) (== `(,head . ,rest) out))
+(define (caro l out) (!? (conso out : l)))
+(define (cdro l out) (!? (conso : out l)))
+;(define (cdro l out) (!? (== (cons : l) out)))
 
-;(define (appendo l s ls)
- ; (conde [(== '() l) (== s ls)]
-  ;       [(!? (conso (caro l ?) (appendo (cdro l ?) s ?) ls))]))
+(define (appendo l s ls) (!?
+  (conde [(== '() l) (== s ls)]
+         [(conso (caro l ?) (appendo (cdro l ?) s ?) ls)])))
 
 ;(run 6 (x y) (appendo x y '(1 2 3 4 5)))
 
-(run 2 (q) (!? (conde
-                [(== (pair 1 ?) q)]
-                [(== (sing 1 ?) q)])))
+(define (ino x l) (!? (conde [(caro l x)]
+                             [(ino x (cdro l ?))])))
+(run 3 (q) (ino q '(1 2 3)))
+;(define (incdro x l) (
+(define (listo l) (!? (conso : : l)))
+(define (emptyo l) (== l '()))
+(run 3 (q) (!? (appendo (emptyo !) q '(1 2 3))))
+
+;(run 2 (q) (!? (conde
+ ;               [(== (pair 1 ?) q)]
+  ;              [(== (sing 1 ?) q)])))
 
          ;[(!? (conso (conso ? : l) (appendo (conso : ? l) s ?) ls))]))
 
@@ -139,7 +149,6 @@
 ;; TODO: cleanup
 ;; TODO: get run!? working
 ;; TODO: get list creators working
-;; TODO: test !
 
 
 

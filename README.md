@@ -45,6 +45,5 @@ Gives
 
 ### TODO
 
-- actually test `!`
 - make run* not loop
 - cleanup/usability
