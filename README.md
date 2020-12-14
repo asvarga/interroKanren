@@ -45,5 +45,6 @@ Gives
 
 ### TODO
 
+- make neater macros like `run!?`, `define!?`
 - make run* not loop
-- cleanup/usability
+- preserve syntax info
